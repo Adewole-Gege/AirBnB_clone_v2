@@ -1,15 +1,33 @@
 #!/usr/bin/env bash
-# Set up the server for deployment of web_static
+# Script to set up web servers for deployment of web_static
 
-sudo apt-get update -y
-sudo apt-get install -y nginx
+# Install Nginx if not already installed
+sudo apt update
+sudo apt install -y nginx
 
+# Create required directories
 sudo mkdir -p /data/web_static/releases/test /data/web_static/shared
-echo "<html><body><h1>ALX</h1></body></html>" | sudo tee /data/web_static/releases/test/index.html
 
-sudo ln -sf /data/web_static/releases/test /data/web_static/current
+# Create a simple HTML file to test Nginx configuration
+echo "<html>
+  <head>
+  </head>
+  <body>
+    ALX School
+  </body>
+</html>" | sudo tee /data/web_static/releases/test/index.html
+
+# Create a symbolic link, replacing it if it exists
+sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
+
+# Set ownership of /data/ folder to ubuntu user and group
 sudo chown -R ubuntu:ubuntu /data/
 
-sudo sed -i '/^\s*location \/ {/a \ \tlocation /hbnb_static {\n\t\talias /data/web_static/current/;\n\t}\n' /etc/nginx/sites-available/default
-sudo systemctl restart nginx
-exit 0
+# Update Nginx configuration to serve content of /data/web_static/current to /hbnb_static
+sudo sed -i "/server_name _;/a \\
+    location /hbnb_static/ {
+        alias /data/web_static/current/;
+    }" /etc/nginx/sites-available/default
+
+# Restart Nginx to apply changes
+sudo service nginx restart
