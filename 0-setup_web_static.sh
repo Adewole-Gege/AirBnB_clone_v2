@@ -10,8 +10,9 @@ if ! dpkg -l | grep -q nginx; then
     sudo apt-get install -y nginx
 fi
 
-# Create necessary directories
+# Create necessary directories with correct permissions
 sudo mkdir -p /data/web_static/releases/test /data/web_static/shared
+sudo chmod -R 755 /data
 
 # Create a fake HTML file
 echo "<html>
@@ -33,7 +34,7 @@ sudo chown -R ubuntu:ubuntu /data/
 
 # Update Nginx configuration to serve content
 if ! sudo grep -q "location /hbnb_static" /etc/nginx/sites-available/default; then
-    sudo sed -i '/server_name _;/a \\\n    location /hbnb_static {\n        alias /data/web_static/current/;\n        index index.html;\n    }' /etc/nginx/sites-available/default
+    sudo sed -i '/server_name _;/a \\n    location /hbnb_static {\\n        alias /data/web_static/current/;\\n        index index.html;\\n    }' /etc/nginx/sites-available/default
 fi
 
 # Restart Nginx
