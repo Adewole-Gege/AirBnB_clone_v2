@@ -6,12 +6,12 @@ set -e
 
 # Install Nginx if not already installed
 if ! dpkg -l | grep -q nginx; then
-    apt-get update
-    apt-get -y install nginx
+    sudo apt-get update -y
+    sudo apt-get install -y nginx
 fi
 
 # Create necessary directories
-mkdir -p /data/web_static/releases/test /data/web_static/shared
+sudo mkdir -p /data/web_static/releases/test /data/web_static/shared
 
 # Create a fake HTML file
 echo "<html>
@@ -20,18 +20,24 @@ echo "<html>
   <body>
     ALX School
   </body>
-</html>" > /data/web_static/releases/test/index.html
+</html>" | sudo tee /data/web_static/releases/test/index.html > /dev/null
 
 # Create symbolic link, recreate if it exists
-ln -sf /data/web_static/releases/test /data/web_static/current
+if [ -L /data/web_static/current ]; then
+    sudo rm /data/web_static/current
+fi
+sudo ln -s /data/web_static/releases/test /data/web_static/current
 
 # Set ownership to ubuntu user and group
-chown -R ubuntu:ubuntu /data/
+sudo chown -R ubuntu:ubuntu /data/
 
 # Update Nginx configuration to serve content
-if ! grep -q "location /hbnb_static" /etc/nginx/sites-available/default; then
-    sed -i '/server_name _;/a \\\n    location /hbnb_static {\n        alias /data/web_static/current/;\n    }' /etc/nginx/sites-available/default
+if ! sudo grep -q "location /hbnb_static" /etc/nginx/sites-available/default; then
+    sudo sed -i '/server_name _;/a \\\n    location /hbnb_static {\n        alias /data/web_static/current/;\n        index index.html;\n    }' /etc/nginx/sites-available/default
 fi
 
 # Restart Nginx
-service nginx restart
+sudo service nginx restart
+
+# Exit successfully
+exit 0
