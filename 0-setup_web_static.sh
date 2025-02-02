@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Set up web servers for deployment of web_static
 
-# Ensure the script exits on any error and prints commands before execution
-set -ex
+# Ensure the script exits on any error
+set -e
 
 # Install Nginx if not already installed
 if ! dpkg -l | grep -q nginx; then
@@ -40,6 +40,5 @@ fi
 # Restart Nginx
 sudo service nginx restart
 
-# Debugging: Ensure script runs successfully
-echo "Script executed successfully!"
+# Exit successfully
 exit 0
