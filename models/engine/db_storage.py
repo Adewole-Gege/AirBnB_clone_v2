@@ -10,6 +10,7 @@ from models.place import Place
 from models.review import Review
 import os
 
+
 class DBStorage:
     """Database storage engine for SQLAlchemy ORM."""
 
@@ -26,12 +27,12 @@ class DBStorage:
 
         self.__engine = create_engine(
             f'mysql+mysqldb://{HBNB_MYSQL_USER}:{HBNB_MYSQL_PWD}@{HBNB_MYSQL_HOST}/{HBNB_MYSQL_DB}',
-            pool_pre_ping=True
-        )
+            pool_pre_ping=True)
 
         # Drop all tables if environment is test
         if HBNB_ENV == 'test':
             Base.metadata.drop_all(self.__engine)
+
     def rollback(self):
         """Rolls back the current database session"""
         self.__session.rollback()
@@ -63,9 +64,11 @@ class DBStorage:
     def reload(self):
         """Reload data from the database."""
         Base.metadata.create_all(self.__engine)
-        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        session_factory = sessionmaker(
+            bind=self.__engine, expire_on_commit=False)
         self.__session = scoped_session(session_factory)()
 
     def close(self):
-    """Close the session properly using scoped_session's remove()"""
-    self.__session.remove()
+        """Close the session properly using scoped_session's remove()"""
+        if self.__session is not None:
+            self.__session.remove()

@@ -26,3 +26,4 @@ def do_clean(number=0):
     for archive in remote_archives[number:]:
         if "web_static_" in archive:
             run(f"rm -rf /data/web_static/releases/{archive}")
+

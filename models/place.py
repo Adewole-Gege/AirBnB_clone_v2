@@ -58,3 +58,4 @@ class Place(BaseModel, Base):
             # place_id equals to the current Place.id
             # for FileStorage
             return [review for review in storage.all(Review).values() if review.place_id == self.id]
+
