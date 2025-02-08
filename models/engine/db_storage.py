@@ -71,4 +71,4 @@ class DBStorage:
     def close(self):
         """Close the session properly using scoped_session's remove()"""
         if self.__session is not None:
-            self.__session.remove()
+            self.__session.close()
