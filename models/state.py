@@ -5,6 +5,7 @@ from os import getenv
 
 storage_type = getenv("HBNB_TYPE_STORAGE")
 
+
 class State(BaseModel, Base):
     """ State class """
     __tablename__ = 'states'
@@ -14,7 +15,10 @@ class State(BaseModel, Base):
         name = Column(String(128), nullable=False)
 
         # Define relationship with City
-        cities = relationship('City', backref='state', cascade='all, delete, delete-orphan')
+        cities = relationship(
+            'City',
+            backref='state',
+            cascade='all, delete, delete-orphan')
 
     else:
         name = ""
@@ -27,4 +31,5 @@ class State(BaseModel, Base):
             """
             from models import storage
             from models.city import City
-            return [city for city in storage.all(City).values() if city.state_id == self.id]
+            return [city for city in storage.all(
+                City).values() if city.state_id == self.id]
