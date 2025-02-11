@@ -2,7 +2,7 @@
 """
 State module for the HBNB project.
 
-Contains the State class and a FileStorage-only getter for related City objects.
+Defines the State class and, for FileStorage, a getter for related cities.
 """
 import os
 from models.base_model import BaseModel, Base
@@ -14,23 +14,23 @@ storage_type = os.getenv("HBNB_TYPE_STORAGE")
 
 class State(BaseModel, Base):
     """
-    State class that represents a US state.
-
-    In DBStorage mode:
-      - name is a column in the 'states' table.
-      - 'cities' is a relationship to City.
-    In FileStorage mode:
-      - name is just an attribute.
-      - 'cities' is a getter property that returns a list of City instances.
+    State class
+    Attributes for DBStorage:
+      - __tablename__ = 'states'
+      - name (Column)
+      - cities (relationship)
+    Attributes/logic for FileStorage:
+      - name (string)
+      - cities (getter that returns a list of City objects whose state_id = self.id)
     """
     __tablename__ = 'states'
 
     if storage_type == "db":
         name = Column(String(128), nullable=False)
         cities = relationship(
-            'City',
-            backref='state',
-            cascade='all, delete, delete-orphan'
+            "City",
+            backref="state",
+            cascade="all, delete, delete-orphan"
         )
     else:
         name = ""
@@ -38,8 +38,8 @@ class State(BaseModel, Base):
         @property
         def cities(self):
             """
-            Returns the list of City instances where City.state_id == current State.id.
-            This is only used when FileStorage is being used.
+            Returns a list of City instances with state_id == current State.id
+            Only used if storage_type is 'fs' (FileStorage).
             """
             from models import storage
             from models.city import City
