@@ -19,6 +19,5 @@ def do_pack():
         archive_path = f"versions/web_static_{timestamp}.tgz"
         local(f"tar -cvzf {archive_path} web_static")
         return archive_path
-    except:
+    except BaseException:
         return None
-

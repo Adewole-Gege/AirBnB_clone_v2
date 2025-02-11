@@ -6,6 +6,7 @@ from fabric.api import env, run, local
 
 env.hosts = ['<IP web-01>', '<IP web-02>']
 
+
 def do_clean(number=0):
     """
     Deletes out-of-date archives
@@ -26,4 +27,3 @@ def do_clean(number=0):
     for archive in remote_archives[number:]:
         if "web_static_" in archive:
             run(f"rm -rf /data/web_static/releases/{archive}")
-
