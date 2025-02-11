@@ -7,13 +7,14 @@
 #  - Changes ownership of /data/ to the ubuntu user and group recursively.
 #  - Updates the Nginx configuration so that Nginx serves the content of
 #    /data/web_static/current/ when accessing /hbnb_static.
+#    (The configuration includes an index directive to ensure proper serving.)
 #  - Restarts Nginx so that the configuration changes take effect.
 
 set -e
 
-###############################
+####################################
 # 1. Install Nginx if needed.
-###############################
+####################################
 apt-get update -y
 apt-get install -y nginx
 
@@ -52,10 +53,10 @@ chown -R ubuntu:ubuntu /data/
 ######################################################################
 NGINX_CONF="/etc/nginx/sites-available/default"
 
-# Remove any previous location /hbnb_static block if present.
+# Remove any previous /hbnb_static block if present.
 sed -i '/location \/hbnb_static\/ {/,/}/d' "$NGINX_CONF"
 
-# Insert the new location block only if it’s not already present.
+# Insert the new location block with an index directive using awk.
 if ! grep -q "location /hbnb_static/ {" "$NGINX_CONF"; then
     awk 'BEGIN { inserted=0 }
          {
@@ -63,6 +64,7 @@ if ! grep -q "location /hbnb_static/ {" "$NGINX_CONF"; then
            if (inserted == 0 && $0 ~ /server\s*{/) {
                print "\tlocation /hbnb_static/ {";
                print "\t\talias /data/web_static/current/;";
+               print "\t\tindex index.html;";
                print "\t}";
                inserted=1;
            }
