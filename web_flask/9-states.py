@@ -7,7 +7,7 @@ Routes:
         Displays an HTML page with all State objects (from storage)
         sorted by name (A→Z). Each state is rendered as:
             <state.id>: <B><state.name></B>
-    /states/<state_id>:
+    /states/<id>:
         If a State with the given id is found, displays:
             <H1>State: <state.name></H1>
             <H3>Cities:</H3>
@@ -36,19 +36,20 @@ def states_list():
     """
     Retrieves all State objects from storage, sorts them by name (A→Z),
     and passes them to the template along with state=None.
+    (If there are no states, an empty list is passed.)
     """
     states = sorted(storage.all(State).values(), key=lambda s: s.name)
     return render_template('9-states.html', states=states, state=None)
 
 
-@app.route('/states/<state_id>', strict_slashes=False)
-def state_detail(state_id):
+@app.route('/states/<id>', strict_slashes=False)
+def state_detail(id):
     """
     Retrieves the State with the given id from storage.
     If found, sorts its cities by name (A→Z) and passes both to the template.
-    If not found, passes state=None so that the template displays "Not found!".
+    If not found, passes state=None.
     """
-    state = storage.all(State).get("State." + state_id)
+    state = storage.all(State).get("State." + id)
     if state is None:
         return render_template('9-states.html', state=None)
     cities = sorted(state.cities, key=lambda c: c.name)
