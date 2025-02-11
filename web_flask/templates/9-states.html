@@ -1,11 +1,11 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <HTML lang="en">
 <HEAD>
-    <META charset="UTF-8" />
+    <META charset="UTF-8">
     <TITLE>HBNB</TITLE>
 </HEAD>
 <BODY>
-    {% if state is not none %}
+    {% if state %}
         <H1>State: {{ state.name }}</H1>
         <H3>Cities:</H3>
         <UL>
@@ -13,7 +13,7 @@
                 <LI>{{ city.id }}: <B>{{ city.name }}</B></LI>
             {% endfor %}
         </UL>
-    {% elif states is not none %}
+    {% elif states %}
         <H1>States</H1>
         <UL>
             {% for state in states %}
