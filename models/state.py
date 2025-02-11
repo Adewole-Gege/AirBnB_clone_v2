@@ -2,8 +2,9 @@
 """
 State module for the HBNB project.
 
-Defines the State class and, for FileStorage, a getter for related cities.
+Defines the State class and (for FileStorage) a getter for related City objects.
 """
+
 import os
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String
@@ -14,16 +15,17 @@ storage_type = os.getenv("HBNB_TYPE_STORAGE")
 
 class State(BaseModel, Base):
     """
-    State class
-    Attributes for DBStorage:
-      - __tablename__ = 'states'
-      - name (Column)
-      - cities (relationship)
-    Attributes/logic for FileStorage:
-      - name (string)
-      - cities (getter that returns a list of City objects whose state_id = self.id)
+    State class for the HBNB project.
+
+    When using DBStorage:
+      - __tablename__ is 'states'
+      - name is a column (string)
+      - cities is a relationship with the City class
+    When using FileStorage:
+      - name is a string attribute
+      - cities is a getter that returns all City objects with state_id == self.id
     """
-    __tablename__ = 'states'
+    __tablename__ = "states"
 
     if storage_type == "db":
         name = Column(String(128), nullable=False)
@@ -38,13 +40,10 @@ class State(BaseModel, Base):
         @property
         def cities(self):
             """
-            Returns a list of City instances with state_id == current State.id
-            Only used if storage_type is 'fs' (FileStorage).
+            Returns the list of City instances with state_id equal to the current State id.
+            This is only used when FileStorage is enabled.
             """
             from models import storage
             from models.city import City
-            city_list = []
-            for city in storage.all(City).values():
-                if city.state_id == self.id:
-                    city_list.append(city)
-            return city_list
+            return [city for city in storage.all(City).values()
+                    if city.state_id == self.id]
