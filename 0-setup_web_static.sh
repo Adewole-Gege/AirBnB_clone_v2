@@ -1,44 +1,46 @@
 #!/usr/bin/env bash
-# Set up web servers for deployment of web_static
+# This script sets up the web servers for deployment of web_static:
+# - Installs Nginx if needed
+# - Creates the folder structure required
+# - Generates a fake HTML file to test Nginx configuration
+# - Creates (or recreates) a symbolic link to the test folder
+# - Changes ownership of /data/ to the ubuntu user:group
+# - Updates Nginx configuration to serve the content at /hbnb_static
 
-# Ensure the script exits on any error
-set -e
+# Update package list and install Nginx if not already installed
+apt-get update -y
+apt-get install -y nginx
 
-# Install Nginx if not already installed
-if ! dpkg -l | grep -q nginx; then
-    sudo apt-get update -y
-    sudo apt-get install -y nginx
-fi
+# Create required directories (if they do not already exist)
+mkdir -p /data/web_static/releases/test/
+mkdir -p /data/web_static/shared/
 
-# Create necessary directories with correct permissions
-sudo mkdir -p /data/web_static/releases/test /data/web_static/shared
-sudo chmod -R 755 /data
-
-# Create a fake HTML file
-echo "<html>
+# Create a fake HTML file to test Nginx configuration
+cat <<EOF > /data/web_static/releases/test/index.html
+<html>
   <head>
   </head>
   <body>
-    ALX School
+    ALX
   </body>
-</html>" | sudo tee /data/web_static/releases/test/index.html > /dev/null
+</html>
+EOF
 
-# Create symbolic link, recreate if it exists
-if [ -L /data/web_static/current ]; then
-    sudo rm /data/web_static/current
-fi
-sudo ln -s /data/web_static/releases/test /data/web_static/current
+# Delete the symbolic link if it already exists and create a new one
+ln -sf /data/web_static/releases/test/ /data/web_static/current
 
-# Set ownership to ubuntu user and group
-sudo chown -R ubuntu:ubuntu /data/
+# Give ownership of the /data/ folder to the ubuntu user and group recursively
+chown -R ubuntu:ubuntu /data/
 
-# Update Nginx configuration to serve content
-if ! sudo grep -q "location /hbnb_static" /etc/nginx/sites-available/default; then
-    sudo sed -i '/server_name _;/a \\n    location /hbnb_static {\\n        alias /data/web_static/current/;\\n        index index.html;\\n    }' /etc/nginx/sites-available/default
-fi
+# Update Nginx configuration to serve the content of /data/web_static/current/ when accessing /hbnb_static
+# The following sed command inserts the location block after the line containing "server {"
+sed -i '/server {/a \
+\n\tlocation /hbnb_static/ {\
+\n\t\talias /data/web_static/current/;\
+\n\t}\n' /etc/nginx/sites-available/default
 
-# Restart Nginx
-sudo service nginx restart
+# Restart Nginx to apply the new configuration
+service nginx restart
 
 # Exit successfully
 exit 0
