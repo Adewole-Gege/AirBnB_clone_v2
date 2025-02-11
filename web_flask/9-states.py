@@ -3,16 +3,16 @@
 Flask web application to display States and their Cities.
 Routes:
     /states:
-        Display an HTML page with all State objects sorted by name (A→Z).
-        Each State is rendered as:
+        Displays an HTML page with all State objects sorted by name (A→Z).
+        Each state is rendered as:
             <state.id>: <B><state.name></B>
     /states/<state_id>:
-        If a State with that id is found, display:
+        If a State with the given id is found, displays:
             <H1>State: <state.name></H1>
             <H3>Cities:</H3>
             <UL> with each City (sorted by name A→Z) as:
                 <city.id>: <B><city.name></B>
-        Otherwise, display:
+        Otherwise, displays:
             <H1>Not found!</H1>
 After each request, the current SQLAlchemy session is closed.
 """
@@ -33,19 +33,20 @@ def teardown_db(exception):
 def states_list():
     """
     Retrieves all State objects, sorts them by name (A→Z),
-    and passes the list to the template.
+    and passes them to the template.
+    Also passes state=None so that the template displays the list.
     """
     states = sorted(storage.all(State).values(), key=lambda s: s.name)
-    return render_template('9-states.html', states=states)
+    return render_template('9-states.html', states=states, state=None)
 
 
 @app.route('/states/<state_id>', strict_slashes=False)
 def state_detail(state_id):
     """
     Retrieves the State object with the given id.
-    If found, its cities are sorted by name (A→Z) and both the state
-    and its cities are passed to the template.
-    If not found, passes state=None so that the template displays "Not found!".
+    If found, sorts its cities by name (A→Z) and passes both to the template.
+    If not found, passes state=None (and does not pass states) so the template
+    displays "Not found!".
     """
     state = storage.all(State).get("State." + state_id)
     if state is None:
