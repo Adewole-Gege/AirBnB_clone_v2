@@ -2,13 +2,12 @@
 """
 Starts a Flask web application that listens on 0.0.0.0, port 5000.
 
-Routes:
+Route:
     /states_list:
         Displays a HTML page with:
             - An H1 tag with "States"
             - A UL tag with the list of all State objects (from storage)
-              sorted by name (A→Z)
-              where each LI is formatted as:
+              sorted by name (A→Z), where each LI is formatted as:
                   <state.id>: <B><state.name></B>
 After each request, the current SQLAlchemy session is closed.
 """
@@ -29,6 +28,7 @@ def states_list():
     Retrieves all State objects from storage, sorts them by name (A→Z),
     and passes the sorted list to the template.
     """
+    # Get all State objects (storage.all returns a dictionary)
     states = sorted(storage.all(State).values(), key=lambda state: state.name)
     return render_template('7-states_list.html', states=states)
 
