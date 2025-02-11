@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <HTML lang="en">
 <HEAD>
+    <META charset="UTF-8">
     <TITLE>HBNB</TITLE>
 </HEAD>
 <BODY>
-    {% if state is defined and state %}
+    {% if state is not none %}
         <H1>State: {{ state.name }}</H1>
         <H3>Cities:</H3>
         <UL>
