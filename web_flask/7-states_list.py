@@ -4,7 +4,7 @@ Starts a Flask web application that listens on 0.0.0.0, port 5000.
 
 Routes:
     /states_list:
-        Displays an HTML page with:
+        Displays a HTML page with:
             - An H1 tag with "States"
             - A UL tag with the list of all State objects (from storage)
               sorted by name (A→Z)
