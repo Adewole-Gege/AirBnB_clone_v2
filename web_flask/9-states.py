@@ -3,15 +3,17 @@
 Flask web application to display States and their Cities.
 Routes:
     /states:
-        - Displays an HTML page with all State objects (sorted by name).
-        - Each state is rendered as: <state.id>: <B><state.name></B>
+        Display an HTML page with all State objects sorted by name (A→Z).
+        Each State is rendered as:
+            <state.id>: <B><state.name></B>
     /states/<state_id>:
-        - If a State with the given id exists:
-            * H1 tag: "State: <state.name>"
-            * H3 tag: "Cities:"
-            * UL listing each City (sorted by name) as: <city.id>: <B><city.name></B>
-        - Otherwise:
-            * H1 tag: "Not found!"
+        If a State with that id is found, display:
+            <H1>State: <state.name></H1>
+            <H3>Cities:</H3>
+            <UL> with each City (sorted by name A→Z) as:
+                <city.id>: <B><city.name></B>
+        Otherwise, display:
+            <H1>Not found!</H1>
 After each request, the current SQLAlchemy session is closed.
 """
 from flask import Flask, render_template
@@ -23,37 +25,32 @@ app = Flask(__name__)
 
 @app.teardown_appcontext
 def teardown_db(exception):
-    """
-    Closes the current SQLAlchemy session after each request.
-    """
+    """Closes the current SQLAlchemy session after each request."""
     storage.close()
 
 
 @app.route('/states', strict_slashes=False)
 def states_list():
     """
-    Displays all State objects sorted by name.
+    Retrieves all State objects, sorts them by name (A→Z),
+    and passes the list to the template.
     """
-    states_dict = storage.all(State)
-    # Convert to a list and sort by state.name in ascending order
-    states = sorted(states_dict.values(), key=lambda state: state.name)
+    states = sorted(storage.all(State).values(), key=lambda s: s.name)
     return render_template('9-states.html', states=states)
 
 
 @app.route('/states/<state_id>', strict_slashes=False)
 def state_detail(state_id):
     """
-    Displays the details for a specific State and its Cities.
-    If found, sorts the State's cities by name.
-    Otherwise, returns a page with "Not found!".
+    Retrieves the State object with the given id.
+    If found, its cities are sorted by name (A→Z) and both the state
+    and its cities are passed to the template.
+    If not found, passes state=None so that the template displays "Not found!".
     """
-    states_dict = storage.all(State)
-    state = states_dict.get(f"State.{state_id}")
-    if state:
-        # Sort the cities of the found state by name
-        cities = sorted(state.cities, key=lambda city: city.name)
-    else:
-        cities = None
+    state = storage.all(State).get("State." + state_id)
+    if state is None:
+        return render_template('9-states.html', state=None)
+    cities = sorted(state.cities, key=lambda c: c.name)
     return render_template('9-states.html', state=state, cities=cities)
 
 
