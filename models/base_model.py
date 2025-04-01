@@ -60,3 +60,7 @@ class BaseModel:
         """Deletes the current instance from storage"""
         from models import storage  # Lazy import to avoid circular dependency
         storage.delete(self)
+<<<<<<< HEAD
+=======
+
+>>>>>>> main

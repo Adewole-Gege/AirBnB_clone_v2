@@ -104,3 +104,7 @@ def test_delete_state(self):
     # Close database connection
     cur.close()
     db.close()
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
