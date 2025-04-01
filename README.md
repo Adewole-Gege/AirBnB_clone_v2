@@ -23,6 +23,5 @@ The AirBnB Clone project is a comprehensive full-stack web application that emul
 - SQLAlchemy 1.4.x
 
 ## Authors
-- Hassan AL OUATIQ
-- Anas AATEF
+- Adewole Gege
 
